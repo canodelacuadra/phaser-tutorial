@@ -14,3 +14,6 @@
 ## Paso 2 Cargar imágenes y físicas arcade
 
 ## Paso 3 Mover objetos con teclado
+
+## Paso 4 Escenas
+
