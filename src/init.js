@@ -21,15 +21,25 @@ const config = {
 var game = new Phaser.Game(config)
 // se encarga de precargar assets
 function preload(){
-    this.load.image("bird","./assets/bird.png")
+    this.load.image("bird","./assets/bird.png");
   
 }
 function create(){
-    this.bird = this.physics.add.image(50,100, "bird");
-   this.bird.setCollideWorldBounds(true);
-   this.bird.setBounce(0.2);
-   this.bird.setVelocity(50,0)
+    //console.log(Phaser.Input.Keyboard.KeyCodes); 
+    var bird = this.add.image(100,50, "bird");
+    this.input.keyboard.on("keydown-RIGHT",function(event) {
+      bird.x++;
+    });
+    this.input.keyboard.on("keydown-LEFT",function(event) {
+    bird.x--;
+    });
+    this.input.keyboard.on("keydown-DOWN",function(event) {
+    bird.y++;
+    });
+    this.input.keyboard.on("keydown-UP",function(event) {
+    bird.y--;
+    });
 }
 function update(time,delta){
-    console.log('soy update');
+    
 }

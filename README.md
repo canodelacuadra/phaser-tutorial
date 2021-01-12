@@ -11,4 +11,6 @@
    ````
 4. Creamos index 
 5. Creamos init.js
+## Paso 2 Cargar imágenes y físicas arcade
 
+## Paso 3 Mover objetos con teclado
