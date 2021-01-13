@@ -3,6 +3,13 @@ export class Game extends Phaser.Scene {
   constructor() {
     super({ key: 'game' });
   }
+  init() {
+    this.score = 0;
+  }
+  platformImpact() {
+    this.score++;
+    this.scoreText.setText('PUNTOS: ' + this.score);
+}
 
   preload() {
     this.load.image('background', 'assets/background.png');
@@ -27,8 +34,12 @@ export class Game extends Phaser.Scene {
         }
     this.ball.setVelocity(velocity, 10);   
     this.physics.world.setBoundsCollision(true, true, true, false); 
-      this.physics.add.collider(this.ball, this.platform);
-      
+      this.physics.add.collider(this.ball, this.platform, this.platformImpact, null, this);
+      this.scoreText = this.add.text(16, 16, 'PUNTOS: 0', { 
+  fontSize: '20px', 
+  fill: '#fff', 
+  fontFamily: 'verdana, arial, sans-serif' 
+});
  
   }
   update() {
