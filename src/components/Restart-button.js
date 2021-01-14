@@ -3,7 +3,6 @@ export class RestartButton {
     this.relatedScene = scene;
   }
 
-  // otros métodos de la clase
   preload() {
     this.relatedScene.load.spritesheet('button', 'assets/images/restart.png', { frameWidth: 190, frameHeight: 49 });
   }
