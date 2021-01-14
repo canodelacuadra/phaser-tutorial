@@ -1,4 +1,5 @@
 import { Scoreboard } from '../components/Scoreboard.js';
+import { Livesboard } from '../components/Livesboard.js';
 export class Game extends Phaser.Scene {
 
   constructor() {
@@ -7,6 +8,7 @@ export class Game extends Phaser.Scene {
 
   init() {
     this.scoreboard = new Scoreboard(this);
+    this.livesboard = new Livesboard(this);
   }
 
 
@@ -50,10 +52,10 @@ export class Game extends Phaser.Scene {
 
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    this.ball = this.physics.add.image(385, 430, 'ball');
+    this.ball = this.physics.add.image(400, 435, 'ball');
     this.ball.setCollideWorldBounds(true);
-    this.ball.setBounce(1);
-    this.ball.setData('glue', true);
+    this.ball.setBounce(1);//rebote de pelota
+    this.ball.setData('glue', true);//datos añadidos a pelota
 
     this.physics.world.setBoundsCollision(true, true, true, false); 
 
@@ -61,6 +63,7 @@ export class Game extends Phaser.Scene {
     this.physics.add.collider(this.ball, this.bricks, this.brickImpact, null, this);
 
     this.scoreboard.create();
+    this.livesboard.create();
    
  /*    this.congratsImage = this.add.image(400, 90, 'congratulations');
     this.congratsImage.visible = false; */
@@ -72,16 +75,28 @@ export class Game extends Phaser.Scene {
     this.startGameSample = this.sound.add('startgamesample');
 
   }
-  
-
-
   update() {
-  
+    this.iniciarBola();
+    this.darBola();
+    this.caerBola();
+  }
+
+  iniciarBola() {
+    //  Plataforma impulsa bola
+    if (this.cursors.up.isDown) {
+      if (this.ball.getData('glue')) {
+        this.ball.setData('glue', false);
+        this.ball.setVelocity(-30, -300);
+         this.startGameSample.play();
+      }
+    }
+  }
+    darBola() {
     if (this.cursors.left.isDown) {
       // velocidad del cursor 
       this.platform.setVelocityX(-500);
       if (this.ball.getData('glue')) {
-        
+        //comportamiento de inicio de la pelota donde glue =true
         this.ball.setVelocityX(-500);
       }
     }
@@ -97,56 +112,70 @@ export class Game extends Phaser.Scene {
         this.ball.setVelocityX(0);
       }
     }
-    
-  // Bola supera la plataforma
-    if (this.ball.y > 500  && this.ball.active) {
-      this.endGame();
-      this.gameOverSample.play();
+  }
+
+  caerBola() {
+      // Bola cae bajo suelo
+    if (this.ball.y > 500 /*  && this.ball.active */) {
+      this.livesboard.decrement(-1);
+      this.startGameSample.play();
+      this.scene.pause();
+
+      if (this.livesboard.lives > 0) {
+        //reiniciamos posicion
+        this.ball.x = 400;
+        this.ball.y = 435;
+        this.platform.x = 400;
+        this.ball.setVelocity(0);
+        this.scene.resume();
+        this.ball.setData('glue', true);
+        //console.log('tengo vidas'+this.livesboard.lives);
+      }else{
+      this.endGame(false);
+      }  
  
     }
-//  Plataforma impulsa pelota
-    if (this.cursors.up.isDown) {
-      if (this.ball.getData('glue')) {
-        this.startGameSample.play();
-        this.ball.setVelocity(-60, -300);
-        this.ball.setData('glue', false);
-      }
-    }
-
   }
+
+ endGame(exito) {
+    if(exito) {
+      this.scene.start('congratulations');
+      this.winSample.play();
+    } else {
+      this.scene.start('gameover');
+      this.gameOverSample.play();
+   }
+  }
+  
+
+
+
   platformImpact(ball,platform) {
     //this.scoreboard.increment(1);
     this.platformImpactSample.play();
     let relativeImpact = ball.x - platform.x;
     if(relativeImpact > 0) {
         //console.log('derecha!');
-        ball.setVelocityX(8 * relativeImpact);
+        ball.setVelocityX(6 * relativeImpact);
     } else if(relativeImpact < 0) {
         //console.log('izquierda!');
-        ball.setVelocityX(8 * relativeImpact);
+        ball.setVelocityX(6 * relativeImpact);
     } else {
         console.log('centro!!');
         ball.setVelocityX(Phaser.Math.Between(-10, 10))
     }
     
   }
-  
   brickImpact(ball, brick) {
       brick.disableBody(true, true);
-      this.scoreboard.increment(10);
+    this.scoreboard.increment(10);
+    
       this.brickImpactSample.play();
     if (this.bricks.countActive() === 0) {
-      this.endGame();
-      this.winSample.play();
+      this.endGame(true);
+      
     }
   }
-  endGame(completed = false) {
-    this.scene.pause();
-    if(! completed) {
-    this.scene.start('gameover');
-    } else {
-    this.scene.start('congratulations');
-   }
-  }
+ 
 
 }
