@@ -33,7 +33,7 @@ export class Game extends Phaser.Scene {
   }
 
   create() {
-    this.add.image(410, 250, 'background');
+    this.add.image(400, 300, 'background');
     this.bricks = this.physics.add.staticGroup({
       key: ['bluebrick', 'orangebrick', 'greenbrick', 'blackbrick'], 
       frameQuantity: 10,
@@ -46,13 +46,12 @@ export class Game extends Phaser.Scene {
         y: 100
       } 
     });
-    this.platform = this.physics.add.image(400, 460, 'platform').setImmovable();
+    this.platform = this.physics.add.image(400, 560, 'platform').setImmovable();
     this.platform.body.allowGravity = false;
     this.platform.setCollideWorldBounds(true);
 
-    this.cursors = this.input.keyboard.createCursorKeys();
 
-    this.ball = this.physics.add.image(400, 435, 'ball');
+    this.ball = this.physics.add.image(400, 535, 'ball');
     this.ball.setCollideWorldBounds(true);
     this.ball.setBounce(1);//rebote de pelota
     this.ball.setData('glue', true);//datos añadidos a pelota
@@ -61,12 +60,16 @@ export class Game extends Phaser.Scene {
 
     this.physics.add.collider(this.ball, this.platform, this.platformImpact, null, this);
     this.physics.add.collider(this.ball, this.bricks, this.brickImpact, null, this);
-
+ /*  Puntuación y vidads */
     this.scoreboard.create();
     this.livesboard.create();
    
- /*    this.congratsImage = this.add.image(400, 90, 'congratulations');
-    this.congratsImage.visible = false; */
+   
+    //creamos control de teclado
+    this.cursors = this.input.keyboard.createCursorKeys();
+   
+   
+ /*  Sonidos */
   
     this.platformImpactSample = this.sound.add('platformimpactsample');
     this.brickImpactSample = this.sound.add('brickimpactsample');
@@ -79,11 +82,12 @@ export class Game extends Phaser.Scene {
     this.iniciarBola();
     this.darBola();
     this.caerBola();
+   
   }
 
   iniciarBola() {
     //  Plataforma impulsa bola
-    if (this.cursors.up.isDown) {
+    if (this.cursors.up.isDown||this.cursors.space.isDown) {
       if (this.ball.getData('glue')) {
         this.ball.setData('glue', false);
         this.ball.setVelocity(-30, -300);
@@ -91,7 +95,14 @@ export class Game extends Phaser.Scene {
       }
     }
   }
-    darBola() {
+  darBola() {
+     /*    if (this.input.activePointer.isDown) {
+    // add code for when click or tap occurs
+          console.log(this.input.activePointer.x);
+          this.platform.x = this.input.activePointer.x;
+
+    } */
+  
     if (this.cursors.left.isDown) {
       // velocidad del cursor 
       this.platform.setVelocityX(-500);
@@ -116,7 +127,7 @@ export class Game extends Phaser.Scene {
 
   caerBola() {
       // Bola cae bajo suelo
-    if (this.ball.y > 500 /*  && this.ball.active */) {
+    if (this.ball.y > 590 /*  && this.ball.active */) {
       this.livesboard.decrement(-1);
       this.startGameSample.play();
       this.scene.pause();
@@ -124,7 +135,7 @@ export class Game extends Phaser.Scene {
       if (this.livesboard.lives > 0) {
         //reiniciamos posicion
         this.ball.x = 400;
-        this.ball.y = 435;
+        this.ball.y = 535;
         this.platform.x = 400;
         this.ball.setVelocity(0);
         this.scene.resume();
@@ -136,6 +147,7 @@ export class Game extends Phaser.Scene {
  
     }
   }
+
 
  endGame(exito) {
     if(exito) {

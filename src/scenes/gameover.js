@@ -12,7 +12,7 @@ export class Gameover extends Phaser.Scene {
   }
   
   create() {
-    this.add.image(410, 250, 'background');
+    this.add.image(400, 300, 'background');
     this.restartButton.create();
     this.gameoverImage = this.add.image(400, 90, 'gameover');
   }
